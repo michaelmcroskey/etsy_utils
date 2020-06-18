@@ -11,8 +11,9 @@ pip3 install -r requirements.txt
 ## Usage
 ```
 python3 publish_listing.py \
-	--chromedriver_path './chromedriver' \
-	--username yourusername \
-	--password yourpassword \
-	--listing_dir '/Users/michaelmcroskey/Documents/Development/etsy_utils/example_listing'
+ --chromedriver_path './chromedriver' \
+ --listing_dir './example_listing' \
+ --username yourusername \
+ --password yourpassword
+	
 ```
