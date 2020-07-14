@@ -3,13 +3,14 @@ import os
 import re
 import time
 
+import zipfile
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import ElementClickInterceptedException
-from zipfile import ZipFile
 
 
 class EtsyBot():
@@ -42,7 +43,7 @@ class EtsyBot():
       listingImage.location_once_scrolled_into_view
       listingImage.send_keys(image)
       time.sleep(1)
-    time.sleep(10 * len(images_to_upload))
+    time.sleep(5 * len(images_to_upload))
     
     # Set title
     titleInput = self.browser.find_element(By.ID, 'title')
@@ -93,12 +94,6 @@ class EtsyBot():
     descriptionInput = self.browser.find_element(By.ID, 'description')
     descriptionInput.location_once_scrolled_into_view
     descriptionInput.send_keys(description)
-    time.sleep(1)
-    
-    # Custom orders
-    allowCustomCheckbox = self.browser.find_element(By.XPATH, "//span[contains(.,\'Buyers can request customization\')]")
-    allowCustomCheckbox.location_once_scrolled_into_view
-    allowCustomCheckbox.click()
     time.sleep(1)
     
     # Section
@@ -166,7 +161,7 @@ def main(args):
       full_path = os.path.join(root, name)
       if re.search(r'listing-photo.*\.(png|jpg)', name):
         images_to_upload.append(full_path)
-      if re.search(r'downloads/.*\.(eps|png|psd|svg)', full_path):
+      if re.search(r'downloads*/.*\.(eps|png|psd|svg)', full_path):
         files_to_upload.append(full_path)
   images_to_upload.sort()
   files_to_upload.sort()
@@ -174,7 +169,7 @@ def main(args):
   
   print('  Zipping files.')
   zipfile_path = '/'.join([args.listing_dir, 'downloads.zip'])
-  with ZipFile(zipfile_path,'w') as f: 
+  with zipfile.ZipFile(zipfile_path,'w', zipfile.ZIP_DEFLATED) as f: 
     # writing each file one by one 
     for file_path in files_to_upload: 
       f.write(file_path)
@@ -230,6 +225,9 @@ In the event that a file doesn't work as you thought it would, please reach out 
         num_characters = len(tag)
         if num_characters > 20:
           print('Tag too long: limit 20 characters. You entered {} characters.'.format(num_characters))
+          continue
+        if tag in tags:
+          print('You cannot use the same tag more than once')
           continue
         i += 1
         tags.append(tag)
